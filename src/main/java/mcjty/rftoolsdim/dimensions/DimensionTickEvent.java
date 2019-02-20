@@ -392,7 +392,7 @@ public class DimensionTickEvent {
                         if (amplifier == null) {
                             amplifier = 0;
                         }
-                        player.addPotionEffect(new PotionEffect(potionEffect, EFFECTS_MAX*MAXTICKS*3, amplifier, true, true));
+                        player.addPotionEffect(new PotionEffect(potionEffect, EFFECTS_MAX*MAXTICKS*3, amplifier, true, false));
                     } else if (effect == EffectType.EFFECT_FLIGHT) {
 //                        BuffProperties.addBuff(player, PlayerBuff.BUFF_FLIGHT, EFFECTS_MAX * MAXTICKS * 2);
                         // @todo
