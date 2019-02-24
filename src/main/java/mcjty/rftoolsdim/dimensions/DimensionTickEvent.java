@@ -1,7 +1,11 @@
 package mcjty.rftoolsdim.dimensions;
 
 import mcjty.rftools.playerprops.BuffProperties;
+<<<<<<< HEAD
 import mcjty.rftools.PlayerBuff;
+=======
+import mcjty.rftools.PlayerBuff
+>>>>>>> flight
 import mcjty.rftoolsdim.ModSounds;
 import mcjty.rftoolsdim.RFToolsDim;
 import mcjty.rftoolsdim.config.GeneralConfiguration;
@@ -396,7 +400,7 @@ public class DimensionTickEvent {
                         }
                         player.addPotionEffect(new PotionEffect(potionEffect, EFFECTS_MAX*MAXTICKS*3, amplifier, true, false));
                     } else if (effect == EffectType.EFFECT_FLIGHT) {
-                        BuffProperties.addBuffToPlayer(player, PlayerBuff.BUFF_FLIGHT, EFFECTS_MAX * MAXTICKS * 2);
+                        BuffProperties.addBuffToPlayer(player, PlayerBuff.BUFF_FLIGHT, EFFECTS_MAX * MAXTICKS * 2);                        
                     }
                 }
                 if (power < PowerConfiguration.DIMPOWER_WARN3) {
