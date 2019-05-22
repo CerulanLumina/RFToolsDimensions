@@ -1,6 +1,5 @@
 package mcjty.rftoolsdim;
 
-import mcjty.lib.McJtyRegister;
 import mcjty.lib.varia.Logging;
 import mcjty.rftoolsdim.config.GeneralConfiguration;
 import mcjty.rftoolsdim.config.PowerConfiguration;
@@ -8,11 +7,13 @@ import mcjty.rftoolsdim.config.WorldgenConfiguration;
 import mcjty.rftoolsdim.dimensions.DimensionInformation;
 import mcjty.rftoolsdim.dimensions.DimensionStorage;
 import mcjty.rftoolsdim.dimensions.RfToolsDimensionManager;
+import mcjty.rftoolsdim.dimensions.dimlets.DimletRandomizer;
+import mcjty.rftoolsdim.dimensions.dimlets.KnownDimletConfiguration;
 import mcjty.rftoolsdim.dimensions.types.EffectType;
 import mcjty.rftoolsdim.dimensions.types.FeatureType;
 import mcjty.rftoolsdim.dimensions.world.GenericWorldProvider;
 import mcjty.rftoolsdim.items.ModItems;
-import net.minecraft.block.Block;
+import mcjty.rftoolsdim.setup.ModSetup;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -22,11 +23,9 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.storage.loot.LootEntryItem;
@@ -35,7 +34,6 @@ import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.functions.LootFunction;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -54,21 +52,6 @@ import java.util.Random;
 public class ForgeEventHandlers {
 
     @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        McJtyRegister.registerBlocks(RFToolsDim.instance, event.getRegistry());
-    }
-
-    @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        McJtyRegister.registerItems(RFToolsDim.instance, event.getRegistry());
-    }
-
-    @SubscribeEvent
-    public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
-        ModSounds.init(sounds.getRegistry());
-    }
-
-    @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Logging.log("SMP: Player logged in: Sync diminfo to clients");
         EntityPlayer player = event.player;
@@ -83,9 +66,18 @@ public class ForgeEventHandlers {
         EntityPlayer player = ((NetHandlerPlayServer) event.getHandler()).player;
         RfToolsDimensionManager manager = RfToolsDimensionManager.getDimensionManager(player.getEntityWorld());
 
-        RFToolsDim.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DISPATCHER);
-        RFToolsDim.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(event.getManager().channel().attr(NetworkDispatcher.FML_DISPATCHER).get());
-        RFToolsDim.channels.get(Side.SERVER).writeOutbound(manager.makeDimensionSyncPacket());
+        ModSetup.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DISPATCHER);
+        ModSetup.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(event.getManager().channel().attr(NetworkDispatcher.FML_DISPATCHER).get());
+        ModSetup.channels.get(Side.SERVER).writeOutbound(manager.makeDimensionSyncPacket());
+    }
+
+    @SubscribeEvent
+    public void clientDisconnected(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        Logging.log("Client disconnected from server");
+        RfToolsDimensionManager.cleanupDimensionInformation();
+        RfToolsDimensionManager.clearInstance();
+        KnownDimletConfiguration.init();
+        DimletRandomizer.init();
     }
 
     @SubscribeEvent
