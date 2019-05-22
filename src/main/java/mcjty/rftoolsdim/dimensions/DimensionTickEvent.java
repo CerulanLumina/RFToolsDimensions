@@ -1,11 +1,7 @@
 package mcjty.rftoolsdim.dimensions;
 
 import mcjty.rftools.playerprops.BuffProperties;
-<<<<<<< HEAD
 import mcjty.rftools.PlayerBuff;
-=======
-import mcjty.rftools.PlayerBuff
->>>>>>> flight
 import mcjty.rftoolsdim.ModSounds;
 import mcjty.rftoolsdim.RFToolsDim;
 import mcjty.rftoolsdim.config.GeneralConfiguration;
